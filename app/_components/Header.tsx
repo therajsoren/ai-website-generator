@@ -15,7 +15,7 @@ const MenuOptions = [
 
 const Header = () => {
   return (
-    <div className="flex items-center mt-[1rem] justify-between p-4 shadow-xl rounded-2xl">
+    <div className="flex items-center mt-[1rem] justify-between p-4 shadow-xl rounded-4xl">
       <div className="flex gap-2 items-center">
         <Image src={"/logo.svg"} alt="logo" width={35} height={35} />
         <h1 className="font-bold text-xl leading-normal">
