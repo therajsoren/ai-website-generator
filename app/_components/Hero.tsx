@@ -1,6 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { suggestions } from "@/types/suggestion";
+import { SignInButton } from "@clerk/nextjs";
 import { ArrowUp, ImagePlus } from "lucide-react";
 import { useState } from "react";
 
@@ -13,7 +14,7 @@ const Hero = () => {
         What should we design ?
       </h1>
       <p className="font-semibold md:text-xl text-lg">
-        Generate, edit and explore designs with AI.Export to code.
+        Generate, edit and explore designs with AI Export to code.
       </p>
 
       <div className="w-full max-w-3xl mx-auto border rounded-2xl p-5 mt-3">
@@ -29,9 +30,11 @@ const Hero = () => {
           <Button variant={"ghost"}>
             <ImagePlus />
           </Button>
-          <Button>
-            <ArrowUp />
-          </Button>
+          <SignInButton mode="modal" forceRedirectUrl={"/workspace"}>
+            <Button disabled={!userInput}>
+              <ArrowUp />
+            </Button>
+          </SignInButton>
         </div>
       </div>
 
