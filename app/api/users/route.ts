@@ -9,6 +9,20 @@ export async function POST(request: NextRequest) {
   const userResult = await db
     .select()
     .from(usersTable)
-    .where(eq(usersTable.email, user?.primaryEmailAddress?.emailAddress!));
-  return NextResponse.json({});
+    //@ts-ignore
+    .where(eq(usersTable.email, user?.primaryEmailAddress?.emailAddress));
+
+  if (userResult?.length == 0) {
+    const data = {
+      email: user?.primaryEmailAddress?.emailAddress ?? "NA",
+      name: user?.fullName ?? "NA",
+      credits: 2,
+    };
+    const result = await db.insert(usersTable).values({
+      email: user?.primaryEmailAddress?.emailAddress ?? "NA",
+      name: user?.fullName ?? "NA",
+    });
+    return NextResponse.json({ user: data });
+  }
+  return NextResponse.json({ user: userResult[0] });
 }
