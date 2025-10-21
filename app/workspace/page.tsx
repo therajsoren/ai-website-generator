@@ -1,6 +1,10 @@
+import Hero from "../_components/Hero";
+
 const Workspace = () => {
-  return <div>
-    
-  </div>;
+  return (
+    <div>
+      <Hero />
+    </div>
+  );
 };
 export default Workspace;
