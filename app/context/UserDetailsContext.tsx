@@ -1,3 +1,11 @@
 import { createContext } from "react";
-export const UserDetailContext = createContext<any>(null);
 
+type UserDetailContextType = {
+  userDetail: unknown;
+  setUserDetail: (value: unknown) => void;
+};
+
+export const UserDetailContext = createContext<UserDetailContextType>({
+  userDetail: null,
+  setUserDetail: () => {},
+});
