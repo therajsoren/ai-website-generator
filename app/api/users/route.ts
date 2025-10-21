@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
   const userResult = await db
     .select()
     .from(usersTable)
-    //@ts-ignore
+    //@ts-expect-error
     .where(eq(usersTable.email, user?.primaryEmailAddress?.emailAddress));
 
   if (userResult?.length == 0) {
