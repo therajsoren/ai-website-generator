@@ -1,8 +1,14 @@
 import { createContext } from "react";
 
+export type UserDetailType = {
+  email?: string;
+  name?: string;
+  credits?: number;
+};
+
 type UserDetailContextType = {
-  userDetail: unknown;
-  setUserDetail: (value: unknown) => void;
+  userDetail: UserDetailType | null;
+  setUserDetail: (value: UserDetailType | null) => void;
 };
 
 export const UserDetailContext = createContext<UserDetailContextType>({

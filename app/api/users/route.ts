@@ -9,7 +9,9 @@ export async function POST(request: NextRequest) {
   const userResult = await db
     .select()
     .from(usersTable)
-    .where(eq(usersTable.email, user?.primaryEmailAddress?.emailAddress!));
+    .where(
+      eq(usersTable.email, user?.primaryEmailAddress?.emailAddress ?? "NA")
+    );
 
   if (userResult?.length == 0) {
     const data = {

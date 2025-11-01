@@ -48,7 +48,7 @@ export function AppSidebar() {
         <div className="p-3 border rounded-xl space-y-3 bg-secondary">
           <h2 className="flex justify-between items-center">
             Remaining Credits
-            <span className="font-bold">{userDetail?.Credits}</span>
+            <span className="font-bold">{userDetail?.credits}</span>
           </h2>
           <Progress value={33} />
           <Button className="w-full">Upgrade to unlimited</Button>
