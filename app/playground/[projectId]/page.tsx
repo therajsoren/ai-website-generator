@@ -6,6 +6,7 @@ import PlaygroundHeader from "../_components/PlaygroundHeader";
 import WebsiteDesign from "../_components/WebsiteDesign";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export type Frame = {
   projectId: string;
@@ -68,14 +69,19 @@ const PlayGround = () => {
   const [messages, setMessages] = useState<Messages[]>([]);
   const [frameDetail, setFrameDetail] = useState<Frame>();
   useEffect(() => {
-    frameId && GetFrameDetails();
-  }, []);
+    if (frameId) GetFrameDetails(); 
+  }, [frameId]);
 
   const GetFrameDetails = async () => {
     const res = await axios.get(
       "/api/frames?frameId=" + frameId + "&projectId=" + projectId
     );
     setFrameDetail(res.data);
+    const designCode = res.data?.designCode;
+    const index = designCode.indexOf("```html");
+    const formattedCode = designCode.slice(index);
+    setGeneratedCode(formattedCode);
+
     if (res.data?.chatMessages?.length == 1) {
       const userMsg = res.data?.chatMessages[0].content;
       SendMessage(userMsg);
@@ -86,7 +92,7 @@ const PlayGround = () => {
 
   const SendMessage = async (userInput: string) => {
     setLoading(true);
-    setMessages((prev: any) => [
+    setMessages((prev) => [
       ...prev,
       {
         role: "user",
@@ -113,7 +119,7 @@ const PlayGround = () => {
     let isCode = false;
 
     while (true) {
-      // @ts-ignore
+      if(!reader) return;
       const { done, value } = await reader?.read();
 
       if (done) break;
@@ -147,6 +153,7 @@ const PlayGround = () => {
         },
       ]);
     }
+    await SaveGeneratedCode(aiResponse);
     setLoading(false);
   };
 
@@ -164,6 +171,15 @@ const PlayGround = () => {
     }
   }, [messages]);
 
+  const SaveGeneratedCode = async (code: string) => {
+    const result = await axios.put("/api/frames", {
+      designCode: generatedCode,
+      projectId: projectId,
+      frameId: frameId,
+    });
+    toast.success("Website is Ready");
+  };
+
   return (
     <div>
       <PlaygroundHeader />
@@ -173,7 +189,7 @@ const PlayGround = () => {
           onSend={(input: string) => SendMessage(input)}
           loading={loading}
         />
-        <WebsiteDesign generatedCode={generatedCode?.replace('```', '')} />
+        <WebsiteDesign generatedCode={generatedCode?.replace("```", "")} />
         <ElementSettingSection />
       </div>
     </div>

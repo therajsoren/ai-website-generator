@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
     const response = await axios.post(
       "https://openrouter.ai/api/v1/chat/completions",
       {
-        model: "google/gemini-2.5-flash-preview-09-2025", // or any OpenRouter-supported model
+        model: "google/gemini-2.5-flash-preview-09-2025", 
         messages,
         stream: true, // enable streaming
       },
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
 
     const readable = new ReadableStream({
       async start(controller) {
-        stream.on("data", (chunk: any) => {
+        stream.on("data", (chunk: Buffer) => {
           const payloads = chunk.toString().split("\n\n");
           for (const payload of payloads) {
             if (payload.includes("[DONE]")) {
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
           controller.close();
         });
 
-        stream.on("error", (err: any) => {
+        stream.on("error", (err: Error) => {
           console.error("Stream error", err);
           controller.error(err);
         });

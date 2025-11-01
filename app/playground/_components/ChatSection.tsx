@@ -6,10 +6,11 @@ import { useState } from "react";
 
 type Props = {
   messages: Messages[];
-  onSend: any;
+  onSend: (input: string) => void | Promise<void>;
   loading: boolean;
 };
 const ChatSection = ({ messages, onSend, loading }: Props) => {
+  console.log("ChatSection received messages:", messages);
   const [input, setInput] = useState<string>();
 
   const handleSend = () => {
@@ -48,9 +49,9 @@ const ChatSection = ({ messages, onSend, loading }: Props) => {
         {loading && (
           <div className="flex justify-center items-center p-4">
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-zinc-800" />
-              <span className="ml-2 text-zinc-800">
-                Thinking... Working on your request
-              </span>
+            <span className="ml-2 text-zinc-800">
+              Thinking... Working on your request
+            </span>
           </div>
         )}
       </div>
