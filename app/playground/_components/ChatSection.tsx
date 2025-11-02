@@ -10,12 +10,11 @@ type Props = {
   loading: boolean;
 };
 const ChatSection = ({ messages, onSend, loading }: Props) => {
-  console.log("ChatSection received messages:", messages);
-  const [input, setInput] = useState<string>();
+  const [input, setInput] = useState<string>("");
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!input?.trim()) return;
-    onSend(input);
+    await onSend(input);
     setInput("");
   };
   return (
@@ -32,7 +31,7 @@ const ChatSection = ({ messages, onSend, loading }: Props) => {
               }`}
             >
               <div
-                className={`p-2 rounded-lg maxw-[80%]
+                className={`p-2 rounded-lg max-w-[80%]
                 ${
                   message.role === "user"
                     ? "bg-white text-black"
@@ -48,7 +47,7 @@ const ChatSection = ({ messages, onSend, loading }: Props) => {
 
         {loading && (
           <div className="flex justify-center items-center p-4">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-zinc-800" />
+            <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-zinc-800" />
             <span className="ml-2 text-zinc-800">
               Thinking... Working on your request
             </span>
@@ -60,11 +59,11 @@ const ChatSection = ({ messages, onSend, loading }: Props) => {
         <textarea
           value={input}
           placeholder="Describe your website design idea"
-          className="flex-1 resize-none border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 overflow-y-hidden"
+          className="flex-1 resize-none border rounded-lg px-3 py-4 focus:outline-none focus:ring-2 overflow-y-auto"
           onChange={(e) => {
             setInput(e.target.value);
             e.target.style.height = "auto";
-            e.target.style.height = `${Math.min(e.target.scrollHeight, 150)}px`;
+            // e.target.style.height = `${Math.min(e.target.scrollHeight, 150)}px`;
           }}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
@@ -72,9 +71,9 @@ const ChatSection = ({ messages, onSend, loading }: Props) => {
               handleSend();
             }
           }}
-          rows={1}
+          // rows={1}
         />
-        <Button onClick={handleSend} disabled={!input?.trim()}>
+        <Button onClick={handleSend} disabled={!input?.trim()} aria-label="Send message">
           <ArrowUp />
         </Button>
       </div>

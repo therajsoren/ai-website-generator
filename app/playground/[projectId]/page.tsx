@@ -84,6 +84,7 @@ const PlayGround = () => {
 
     if (res.data?.chatMessages?.length == 1) {
       const userMsg = res.data?.chatMessages[0].content;
+      setMessages(res.data?.chatMessages);
       SendMessage(userMsg);
     } else {
       setMessages(res.data?.chatMessages);
@@ -173,7 +174,7 @@ const PlayGround = () => {
 
   const SaveGeneratedCode = async (code: string) => {
     const result = await axios.put("/api/frames", {
-      designCode: generatedCode,
+      designCode: code,
       projectId: projectId,
       frameId: frameId,
     });
