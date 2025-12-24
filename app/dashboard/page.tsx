@@ -187,7 +187,7 @@ export default function DashboardPage() {
             >
               <div className="flex items-start justify-between mb-3">
                 <div
-                  className={`w-10 h-10 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center`}
+                  className={`w-10 h-10 rounded-xl bg-linear-to-br ${stat.color} flex items-center justify-center`}
                 >
                   <stat.icon className="w-5 h-5 text-white" />
                 </div>
@@ -284,7 +284,7 @@ export default function DashboardPage() {
                       router.push(`/dashboard/projects/${project.projectId}`)
                     }
                   >
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-xl bg-linear-to-br from-violet-500 to-indigo-500 flex items-center justify-center">
                       <FolderOpen className="w-5 h-5 text-white" />
                     </div>
                     <div>
