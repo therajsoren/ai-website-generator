@@ -4,8 +4,6 @@ import { db } from "@/lib/db";
 import { users } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
-
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
@@ -107,11 +105,17 @@ export async function GET(request: NextRequest) {
     }
 
     // Create JWT
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      throw new Error("JWT_SECRET is not defined");
+    }
+    const secret = new TextEncoder().encode(jwtSecret);
+
     const token = await new SignJWT({ userId: user.id, email: user.email })
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
       .setExpirationTime("7d")
-      .sign(JWT_SECRET);
+      .sign(secret);
 
     // Redirect to dashboard with cookie
     const response = NextResponse.redirect(new URL("/dashboard", request.url));
@@ -123,10 +127,15 @@ export async function GET(request: NextRequest) {
     });
 
     return response;
-  } catch (error) {
-    console.error("GitHub callback error:", error);
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error ? error.message : "Unknown error occurred";
+    console.error("GitHub callback error:", message);
     return NextResponse.redirect(
-      new URL("/login?error=callback_error", request.url)
+      new URL(
+        `/login?error=callback_error&details=${encodeURIComponent(message)}`,
+        request.url
+      )
     );
   }
 }

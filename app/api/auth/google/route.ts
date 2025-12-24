@@ -11,9 +11,10 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const redirectUri = `${
+  const baseUrl = (
     process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-  }/api/auth/google/callback`;
+  ).replace(/\/$/, "");
+  const redirectUri = `${baseUrl}/api/auth/google/callback`;
 
   const googleAuthUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth");
   googleAuthUrl.searchParams.set("client_id", clientId);

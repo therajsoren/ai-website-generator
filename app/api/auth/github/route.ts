@@ -11,9 +11,10 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const redirectUri = `${
+  const baseUrl = (
     process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-  }/api/auth/github/callback`;
+  ).replace(/\/$/, "");
+  const redirectUri = `${baseUrl}/api/auth/github/callback`;
 
   const githubAuthUrl = new URL("https://github.com/login/oauth/authorize");
   githubAuthUrl.searchParams.set("client_id", clientId);
