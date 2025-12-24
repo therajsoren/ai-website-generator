@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { useAuth } from "@/lib/auth-context";
 import {
   FolderOpen,
@@ -42,6 +42,7 @@ export default function DashboardPage() {
   }>({ open: false, projectId: "", projectName: "" });
   const [deleting, setDeleting] = useState(false);
 
+  // Fetch projects
   useEffect(() => {
     async function fetchProjects() {
       try {
@@ -62,6 +63,7 @@ export default function DashboardPage() {
     }
   }, [authLoading]);
 
+  // Create new project
   const handleCreate = async () => {
     if (!prompt.trim()) return;
     setCreating(true);
@@ -85,6 +87,7 @@ export default function DashboardPage() {
     }
   };
 
+  // Delete project
   const handleDelete = async () => {
     if (!deleteModal.projectId) return;
     setDeleting(true);
@@ -107,14 +110,17 @@ export default function DashboardPage() {
     }
   };
 
+  // Open delete modal
   const openDeleteModal = (projectId: string, projectName: string) => {
     setDeleteModal({ open: true, projectId, projectName });
   };
 
+  // Filter projects
   const filteredProjects = projects.filter((p) =>
     p.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // Stats
   const stats = [
     {
       label: "Total Projects",
@@ -161,6 +167,7 @@ export default function DashboardPage() {
   return (
     <>
       <div className="p-6 max-w-7xl mx-auto">
+        {/* Header */}
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-slate-900 mb-2">
             Welcome back, {user?.name?.split(" ")[0] || "there"}!
@@ -168,6 +175,7 @@ export default function DashboardPage() {
           <p className="text-slate-600">Build something amazing today</p>
         </div>
 
+        {/* Stats Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {stats.map((stat, index) => (
             <motion.div
@@ -179,7 +187,7 @@ export default function DashboardPage() {
             >
               <div className="flex items-start justify-between mb-3">
                 <div
-                  className={`w-10 h-10 rounded-xl bg-linear-to-br ${stat.color} flex items-center justify-center`}
+                  className={`w-10 h-10 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center`}
                 >
                   <stat.icon className="w-5 h-5 text-white" />
                 </div>
@@ -191,6 +199,7 @@ export default function DashboardPage() {
           ))}
         </div>
 
+        {/* AI Workspace */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -226,12 +235,14 @@ export default function DashboardPage() {
           </div>
         </motion.div>
 
+        {/* Projects Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
           className="bg-white rounded-2xl border border-slate-200 overflow-hidden"
         >
+          {/* Projects Header */}
           <div className="p-4 border-b border-slate-200 flex items-center justify-between">
             <h2 className="font-semibold text-slate-900">Recent Projects</h2>
             <div className="relative w-64">
@@ -245,6 +256,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
+          {/* Projects List */}
           {loading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
@@ -272,7 +284,7 @@ export default function DashboardPage() {
                       router.push(`/dashboard/projects/${project.projectId}`)
                     }
                   >
-                    <div className="w-10 h-10 rounded-xl bg-linear-to-br from-violet-500 to-indigo-500 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center">
                       <FolderOpen className="w-5 h-5 text-white" />
                     </div>
                     <div>
@@ -304,9 +316,11 @@ export default function DashboardPage() {
         </motion.div>
       </div>
 
+      {/* Delete Confirmation Modal */}
       <AnimatePresence>
         {deleteModal.open && (
           <>
+            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -317,7 +331,7 @@ export default function DashboardPage() {
                 setDeleteModal({ open: false, projectId: "", projectName: "" })
               }
             />
-
+            {/* Modal */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
