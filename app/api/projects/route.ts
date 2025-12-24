@@ -1,32 +1,115 @@
-import { db } from "@/config/db";
-import { chatTable, frameTable, projectTable } from "@/config/schema";
-import { currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
+import { jwtVerify } from "jose";
+import {
+  createProject,
+  getProjectsByUserId,
+  deleteProject,
+} from "@/lib/queries";
+import { nanoid } from "nanoid";
 
-export async function POST(req: NextRequest) {
-  const { projectId, frameId, messages } = await req.json();
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 
-  const user = await currentUser();
+async function getUserFromToken(request: NextRequest) {
+  const token = request.cookies.get("token")?.value;
+  if (!token) return null;
 
-  const projectResult = await db.insert(projectTable).values({
-    projectId: projectId,
-    createdBy: user?.primaryEmailAddress?.emailAddress,
-  });
+  try {
+    const { payload } = await jwtVerify(token, JWT_SECRET);
+    return payload.userId as number;
+  } catch {
+    return null;
+  }
+}
 
-  const frameResult = await db.insert(frameTable).values({
-    frameId: frameId,
-    projectId: projectId,
-  });
+export async function GET(request: NextRequest) {
+  try {
+    const userId = await getUserFromToken(request);
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-  const chatResult = await db.insert(chatTable).values({
-    chatMessage: messages,
-    createdBy: user?.primaryEmailAddress?.emailAddress,
-    frameId: frameId,
-  });
+    const projects = await getProjectsByUserId(userId);
+    return NextResponse.json({ projects });
+  } catch (error) {
+    console.error("Get projects error:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch projects" },
+      { status: 500 }
+    );
+  }
+}
 
-  return NextResponse.json({
-    projectId,
-    frameId,
-    messages,
-  });
+export async function POST(request: NextRequest) {
+  try {
+    const userId = await getUserFromToken(request);
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { name } = body;
+
+    if (!name) {
+      return NextResponse.json(
+        { error: "Project name is required" },
+        { status: 400 }
+      );
+    }
+
+    const projectId = nanoid(12);
+    const project = await createProject({
+      projectId,
+      name,
+      userId,
+    });
+
+    return NextResponse.json({ project });
+  } catch (error) {
+    console.error("Create project error:", error);
+    return NextResponse.json(
+      { error: "Failed to create project" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const userId = await getUserFromToken(request);
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const projectId = searchParams.get("id");
+
+    if (!projectId) {
+      return NextResponse.json(
+        { error: "Project ID is required" },
+        { status: 400 }
+      );
+    }
+
+    const projects = await getProjectsByUserId(userId);
+    const project = projects.find((p) => p.projectId === projectId);
+
+    if (!project) {
+      return NextResponse.json(
+        { error: "Project not found or unauthorized" },
+        { status: 404 }
+      );
+    }
+
+    console.log("Deleting project:", projectId);
+    await deleteProject(projectId);
+    console.log("Project deleted successfully:", projectId);
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Delete project error:", error);
+    return NextResponse.json(
+      { error: "Failed to delete project" },
+      { status: 500 }
+    );
+  }
 }

@@ -1,12 +1,19 @@
-import Image from "next/image";
-import Header from "./_components/Header";
-import Hero from "./_components/Hero";
+import { Header } from "@/components/landing/header";
+import { Hero } from "@/components/landing/hero";
+import { Features } from "@/components/landing/features";
+import { Testimonials } from "@/components/landing/testimonials";
+import { Quota } from "@/components/landing/quota";
+import { Footer } from "@/components/landing/footer";
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div>
+    <main className="min-h-screen">
       <Header />
-      <Hero/>
-    </div>
+      <Hero />
+      <Features />
+      <Quota />
+      <Testimonials />
+      <Footer />
+    </main>
   );
 }
